@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <SDL_ttf.h>
 #include <cstdlib>
 #include <ctime>
 
@@ -66,7 +67,13 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    TTF_Init();
+    if (TTF_Init() == -1) {
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+
     TTF_Font* font = TTF_OpenFont("arial.ttf", 100);
     TTF_Font* button_font = TTF_OpenFont("arial.ttf", 50);
 
