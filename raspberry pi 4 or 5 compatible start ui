@@ -73,7 +73,6 @@ def wait_for_start():
             if event.type == pygame.MOUSEBUTTONDOWN:  # If mouse button pressed
                 if button_rect.collidepoint(event.pos):  # Check if click is on button
                     waiting = False  # Exit the loop
-
 # Main program flow
 draw_stars()  # Draw starry background
 wait_for_start()  # Wait for start button press
