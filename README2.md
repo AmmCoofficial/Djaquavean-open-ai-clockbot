@@ -1,0 +1,1 @@
+the c++ files do not work if you would like to try to get them to work please contact me and i can help b ut from now on the mkII html files are the functioning ones, this applys to Djaqauvean ai mkI, raspberry pi 4 or 5 compatible start ui, and user start ui.
