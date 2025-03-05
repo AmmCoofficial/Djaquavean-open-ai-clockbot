@@ -1,2 +1,22 @@
-<script async type='module' src='https://interfaces.zapier.com/assets/web-components/zapier-interfaces/zapier-interfaces.esm.js'></script>
-<zapier-interfaces-chatbot-embed is-popup='false' chatbot-id='cm7wck9n9000f6jdpzqzhlzr9' height='600px' width='400px'></zapier-interfaces-chatbot-embed>
+from flask import Flask, render_template_string
+
+app = Flask(__name__)
+
+html_content = """
+<!DOCTYPE html>
+<html>
+<head>
+    <script async type='module' src='https://interfaces.zapier.com/assets/web-components/zapier-interfaces/zapier-interfaces.esm.js'></script>
+</head>
+<body>
+    <zapier-interfaces-chatbot-embed is-popup='false' chatbot-id='cm7wck9n9000f6jdpzqzhlzr9' height='600px' width='400px'></zapier-interfaces-chatbot-embed>
+</body>
+</html>
+"""
+
+@app.route('/')
+def home():
+    return render_template_string(html_content)
+
+if __name__ == '__main__':
+    app.run(debug=True)
