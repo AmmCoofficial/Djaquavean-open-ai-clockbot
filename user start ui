@@ -19,6 +19,7 @@ font = pygame.font.Font(None, 100)  # Default font, size 100
 button_font = pygame.font.Font(None, 50)
 
 def draw_stars():
+    """Draw stars on the screen."""
     screen.fill(BLACK)
     for _ in range(100):
         x = random.randint(0, WIDTH)
@@ -26,6 +27,7 @@ def draw_stars():
         pygame.draw.circle(screen, WHITE, (x, y), 2)
 
 def fade_out(text_surface, text_rect):
+    """Fade out the text."""
     for alpha in range(255, -1, -5):
         draw_stars()
         text_surface.set_alpha(alpha)
@@ -34,6 +36,7 @@ def fade_out(text_surface, text_rect):
         pygame.time.wait(50)
 
 def fade_in(new_text_surface, new_text_rect):
+    """Fade in the new text."""
     for alpha in range(0, 256, 5):
         draw_stars()
         new_text_surface.set_alpha(alpha)
@@ -42,6 +45,7 @@ def fade_in(new_text_surface, new_text_rect):
         pygame.time.wait(50)
 
 def draw_start_button():
+    """Draw the start button and return its rectangle."""
     button_rect = pygame.Rect(WIDTH // 2 - 75, HEIGHT // 2 - 25, 150, 50)
     pygame.draw.rect(screen, GREEN, button_rect)
     text_surface = button_font.render("START", True, BLACK)
@@ -51,6 +55,7 @@ def draw_start_button():
     return button_rect
 
 def wait_for_start():
+    """Wait for the user to click the start button."""
     button_rect = draw_start_button()
     waiting = True
     while waiting:
@@ -63,9 +68,16 @@ def wait_for_start():
                     waiting = False
 
 def main():
+    """Main function to run the program."""
     draw_stars()
     wait_for_start()
 
     draw_stars()
     text = font.render("HELLO", True, WHITE)
-    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT
+    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    fade_in(text, text_rect)
+    pygame.time.wait(2000)
+    fade_out(text, text_rect)
+
+if __name__ == "__main__":
+    main()
