@@ -1,0 +1,121 @@
+import pygame
+import time
+import random
+
+# Initialize pygame
+pygame.init()
+
+# Set up display
+WIDTH, HEIGHT = 500, 300
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen.fill((0, 0, 0))
+pygame.display.set_caption("Hello Bubble Fade")
+
+# Define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+
+# Set up font
+font = pygame.font.Font(None, 100)  # Default font, size 100
+button_font = pygame.font.Font(None, 50)
+
+# Generate starry background
+def draw_stars():
+    screen.fill(BLACK)
+    for _ in range(100):  # Number of stars
+        x = random.randint(0, WIDTH)
+        y = random.randint(0, HEIGHT)
+        pygame.draw.circle(screen, WHITE, (x, y), 2)  # Small white dots as stars
+
+def fade_out(text_surface, text_rect):
+    for alpha in range(255, -1, -5):  # Decrease alpha value
+        draw_stars()
+        text_surface.set_alpha(alpha)
+        screen.blit(text_surface, text_rect)
+        pygame.display.update()
+        time.sleep(0.05)  # Small delay for effect
+
+def fade_in(new_text_surface, new_text_rect):
+    for alpha in range(0, 256, 5):  # Increase alpha value
+        draw_stars()
+        new_text_surface.set_alpha(alpha)
+        screen.blit(new_text_surface, new_text_rect)
+        pygame.display.update()
+        time.sleep(0.05)  # Small delay for effect
+
+# Draw start button
+def draw_start_button():
+    button_rect = pygame.Rect(WIDTH//2 - 75, HEIGHT//2 - 25, 150, 50)
+    pygame.draw.rect(screen, GREEN, button_rect)
+    text_surface = button_font.render("START", True, BLACK)
+    text_rect = text_surface.get_rect(center=button_rect.center)
+    screen.blit(text_surface, text_rect)
+    pygame.display.update()
+    return button_rect
+
+# Wait for button press
+def wait_for_start():
+    button_rect = draw_start_button()
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if button_rect.collidepoint(event.pos):
+                    waiting = False
+
+draw_stars()
+wait_for_start()
+
+# Display initial message
+draw_stars()
+text = font.render("HELLO", True, WHITE)
+text_rect = text.get_rect(center=(WIDTH//2, HEIGHT//2))
+screen.blit(text, text_rect)
+pygame.display.update()
+
+time.sleep(1)  # Show "HELLO" before asking for the name
+
+# Ask for user's name
+user_name = input("What is your name? ")
+
+# Update text with user's name
+greeting_text = font.render(f"HELLO {user_name.upper()}", True, WHITE)
+greeting_rect = greeting_text.get_rect(center=(WIDTH//2, HEIGHT//2))
+
+# Show updated text
+draw_stars()
+screen.blit(greeting_text, greeting_rect)
+pygame.display.update()
+time.sleep(1)  # Show name before fade out
+
+fade_out(greeting_text, greeting_rect)
+
+# Create new greeting text
+final_greeting_text = font.render(f"Hello {user_name.capitalize()}!", True, WHITE)
+final_greeting_rect = final_greeting_text.get_rect(center=(WIDTH//2, HEIGHT//2))
+
+fade_in(final_greeting_text, final_greeting_rect)
+
+time.sleep(2)  # Show final greeting before fading out
+fade_out(final_greeting_text, final_greeting_rect)
+
+time.sleep(3)  # Wait 3 seconds before next prompt
+
+# Ask for a name or use default
+default_name = "Djaquaevian"
+entered_name = input("Hello, my name is... (Press Enter to use default: Djaquaevian) ")
+if not entered_name:
+    entered_name = default_name
+
+# Create new introduction text
+intro_text = font.render(f"Hello, my name is {entered_name}!", True, WHITE)
+intro_rect = intro_text.get_rect(center=(WIDTH//2, HEIGHT//2))
+
+fade_in(intro_text, intro_rect)
+
+time.sleep(2)  # Show introduction before quitting
+pygame.quit()
