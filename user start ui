@@ -57,8 +57,8 @@ def draw_start_button():
 # Wait for button press
 def wait_for_start():
     button_rect = draw_start_button()
-        waiting = True
-        while waiting:
+    waiting = True
+    while waiting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -67,7 +67,7 @@ def wait_for_start():
                 if button_rect.collidepoint(event.pos):
                     waiting = False
 
-# draw stars, draws stars
+# Draw stars
 draw_stars()
 wait_for_start()
 
@@ -80,20 +80,30 @@ pygame.display.update()
 
 time.sleep(1)  # Show "HELLO" before asking for the name
 
-# Ask for user's name
-user_name = input("What is your name? ")
+# Ask for user's name (without breaking Pygame)
+user_name = ""
+typing = True
 
-# Update text with user's name
-greeting_text = font.render(f"HELLO {user_name.upper()}", True, WHITE)
-greeting_rect = greeting_text.get_rect(center=(WIDTH//2, HEIGHT//2))
+while typing:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                typing = False
+            elif event.key == pygame.K_BACKSPACE:
+                user_name = user_name[:-1]
+            else:
+                user_name += event.unicode  # Append typed characters
 
-# Show updated text
-draw_stars()
-screen.blit(greeting_text, greeting_rect)
-pygame.display.update()
-time.sleep(1)  # Show name before fade out
+    draw_stars()
+    prompt_text = font.render(f"HELLO {user_name.upper()}", True, WHITE)
+    screen.blit(prompt_text, prompt_text.get_rect(center=(WIDTH//2, HEIGHT//2)))
+    pygame.display.update()
 
-fade_out(greeting_text, greeting_rect)
+# Fade out old text
+fade_out(prompt_text, prompt_text.get_rect(center=(WIDTH//2, HEIGHT//2)))
 
 # Create new greeting text
 final_greeting_text = font.render(f"Hello {user_name.capitalize()}!", True, WHITE)
@@ -108,15 +118,33 @@ time.sleep(3)  # Wait 3 seconds before next prompt
 
 # Ask for a name or use default
 default_name = "Djaquaevian"
-entered_name = input("Hello, my name is... (Press Enter to use default: Djaquaevian) ")
-if not entered_name:
-    entered_name = default_name
+entered_name = ""
 
-# Create new introduction text
-intro_text = font.render(f"Hello, my name is {entered_name}!", True, WHITE)
-intro_rect = intro_text.get_rect(center=(WIDTH//2, HEIGHT//2))
+typing = True
+while typing:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                typing = False
+            elif event.key == pygame.K_BACKSPACE:
+                entered_name = entered_name[:-1]
+            else:
+                entered_name += event.unicode  # Append typed characters
 
-fade_in(intro_text, intro_rect)
+    draw_stars()
+    if entered_name:
+        text_display = f"Hello, my name is {entered_name}!"
+    else:
+        text_display = f"Hello, my name is {default_name}!"
+    
+    intro_text = font.render(text_display, True, WHITE)
+    screen.blit(intro_text, intro_text.get_rect(center=(WIDTH//2, HEIGHT//2)))
+    pygame.display.update()
+
+fade_in(intro_text, intro_text.get_rect(center=(WIDTH//2, HEIGHT//2)))
 
 time.sleep(2)  # Show introduction before quitting
 pygame.quit()
