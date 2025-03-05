@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Greeting</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        .hidden { opacity: 0; transition: opacity 1s; display: none; }
+        .visible { opacity: 1; transition: opacity 1s; display: block; }
+        .button {
+            background-color: green;
+            color: white;
+            padding: 15px 30px;
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .bubble-text {
+            font-size: 32px;
+            font-weight: bold;
+            color: yellow;
+            text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red;
+            animation: flash 1s infinite alternate;
+        }
+        #greeting, #renameContainer {
+            font-size: 32px;
+            font-weight: bold;
+            color: yellow;
+            text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red;
+            animation: flash 1s infinite alternate;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #namePrompt {
+            font-size: 28px;
+            font-weight: bold;
+            color: yellow;
+            text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red;
+        }
+        #nameInput, #renameInput {
+            font-size: 22px;
+            padding: 10px;
+            width: 300px;
+            text-align: center;
+            border: 2px solid yellow;
+            border-radius: 10px;
+            outline: none;
+            background-color: black;
+            color: white;
+            text-shadow: 0 0 10px yellow;
+            box-shadow: 0 0 20px yellow;
+            transition: all 0.3s ease-in-out;
+            position: relative;
+        }
+        #nameInput:focus, #renameInput:focus {
+            box-shadow: 0 0 25px orange;
+            border-color: orange;
+        }
+        #confirmButton, #defaultNameButton {
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: green;
+            color: white;
+            display: block;
+            margin: 10px auto 0;
+        }
+    </style>
+</head>
+<body>
+    <button class="button" onclick="startSequence()">Start</button>
+    <div id="helloText" class="hidden bubble-text">Hello</div>
+    <div id="nameContainer" class="hidden">
+        <div id="namePrompt">What is your name?</div>
+        <input id="nameInput" type="text" oninput="showConfirmButton()">
+        <button id="confirmButton" onclick="submitName()">Confirm</button>
+    </div>
+    <div id="greeting" class="hidden"></div>
+    <div id="renameContainer" class="hidden">
+        <div>My name is:</div>
+        <input id="renameInput" type="text" placeholder="Djaqauvias">
+        <button id="defaultNameButton" onclick="useDefaultName()">Confirm</button>
+        <button onclick="finalizeName()">Use Default Name</button>
+    </div>
+    
+    <script>
+        function startSequence() {
+            document.querySelector('.button').style.display = 'none';
+            let helloText = document.getElementById('helloText');
+            helloText.classList.add('visible');
+            setTimeout(() => {
+                helloText.classList.remove('visible');
+                helloText.classList.add('hidden');
+                setTimeout(() => {
+                    document.getElementById('nameContainer').classList.add('visible');
+                }, 1000);
+            }, 2000);
+        }
+        
+        function showConfirmButton() {
+            let confirmButton = document.getElementById('confirmButton');
+            confirmButton.style.display = 'block';
+        }
+
+        function submitName() {
+            let name = document.getElementById('nameInput').value;
+            if (name.trim() !== "") {
+                document.getElementById('nameContainer').classList.remove('visible');
+                document.getElementById('nameContainer').classList.add('hidden');
+                let greetingText = document.getElementById('greeting');
+                greetingText.innerText = `Hello, ${name}!`;
+                greetingText.classList.add('visible');
+                setTimeout(() => {
+                    greetingText.classList.remove('visible');
+                    greetingText.classList.add('hidden');
+                    setTimeout(() => {
+                        document.getElementById('renameContainer').classList.add('visible');
+                    }, 1000);
+                }, 3000);
+            }
+        }
+
+        function finalizeName() {
+            let newName = document.getElementById('renameInput').value;
+            if (newName.trim() !== "") {
+                alert(`Your final name is: ${newName}`);
+            }
+        }
+
+        function useDefaultName() {
+            alert("Your final name is: Djaqauvias");
+        }
+    </script>
+</body>
+</html>
