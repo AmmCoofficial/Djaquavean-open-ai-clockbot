@@ -34,13 +34,17 @@ def draw_stars():
         pygame.draw.circle(screen, WHITE, (x, y), 2)  # Draw a small white circle (star)
 
 # Create fade-out effect
+def draw_stars():
+    ...
 def fade_out(text_surface, text_rect):
-    for alpha in range(255, -1, -5):  # Gradually decrease alpha value
-        draw_stars()  # Redraw starry background
-        text_surface.set_alpha(alpha)  # Set alpha value of the text
-        screen.blit(text_surface, text_rect)  # Blit (draw) the text on the screen
-        pygame.display.update()  # Update the display
-        time.sleep(0.05)  # Delay for effect
+    ...
+def fade_in(new_text_surface, new_text_rect):
+    ...
+def draw_start_button():
+    ...
+def wait_for_start():
+    ...
+
 
 # Create fade-in effect
 def fade_in(new_text_surface, new_text_rect):
