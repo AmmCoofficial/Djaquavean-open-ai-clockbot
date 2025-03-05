@@ -57,8 +57,8 @@ def draw_start_button():
 # Wait for button press
 def wait_for_start():
     button_rect = draw_start_button()
-    waiting = True
-    while waiting:
+        waiting = True
+        while waiting:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -67,6 +67,7 @@ def wait_for_start():
                 if button_rect.collidepoint(event.pos):
                     waiting = False
 
+# draw stars, draws stars
 draw_stars()
 wait_for_start()
 
