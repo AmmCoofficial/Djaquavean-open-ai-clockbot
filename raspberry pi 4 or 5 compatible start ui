@@ -1,14 +1,16 @@
-import pygame
+pygame.display.set_mode()
 import time
 import random
 import os
+import pygame
 
 # Initialize pygame
-os.environ["SDL_VIDEODRIVER"] = "fbcon"  # Use framebuffer driver for Raspberry Pi
+os.environ["SDL_VIDEODRIVER"] = "fbcon"
 os.environ["SDL_FBDEV"] = "/dev/fb0"
 os.environ["SDL_MOUSEDRV"] = "TSLIB"
 os.environ["SDL_MOUSEDEV"] = "/dev/input/touchscreen"
 pygame.init()
+
 
 # Set up display
 WIDTH, HEIGHT = 500, 300
