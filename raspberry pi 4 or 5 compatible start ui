@@ -1,132 +1,136 @@
-import time  # Import time module for sleep functionality
-import random  # Import random module for generating random numbers
-import os  # Import os module for interacting with the operating system
-import pygame  # Import pygame module for creating games and multimedia applications
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <ctime>
+#include <cstdlib>
+#include <unistd.h>
 
-# Initialize pygame and set environment variables for display and input devices
-os.environ["SDL_VIDEODRIVER"] = "fbcon"  # Use framebuffer console as the video driver
-os.environ["SDL_FBDEV"] = "/dev/fb0"  # Set framebuffer device to /dev/fb0
-os.environ["SDL_MOUSEDRV"] = "TSLIB"  # Use TSLIB as the mouse driver
-os.environ["SDL_MOUSEDEV"] = "/dev/input/touchscreen"  # Set touchscreen device
-pygame.init()  # Initialize all pygame modules
+const int WIDTH = 500;
+const int HEIGHT = 300;
 
-# Set up display
-WIDTH, HEIGHT = 500, 300  # Width and height of the display window
-screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Create the main display surface
-screen.fill((0, 0, 0))  # Fill the screen with black
-pygame.display.set_caption("Hello Bubble Fade")  # Set the window caption (title)
+// Define colors
+const SDL_Color WHITE = {255, 255, 255};
+const SDL_Color BLACK = {0, 0, 0};
+const SDL_Color GREEN = {0, 255, 0};
 
-# Define colors
-WHITE = (255, 255, 255)  # RGB values for white color
-BLACK = (0, 0, 0)  # RGB values for black color
-GREEN = (0, 255, 0)  # RGB values for green color
+SDL_Window* window;
+SDL_Renderer* renderer;
+SDL_Texture* createTextTexture(SDL_Renderer* renderer, const std::string& text, SDL_Color color, int fontSize);
+void drawStars(SDL_Renderer* renderer);
+void fadeOut(SDL_Renderer* renderer, SDL_Texture* textTexture, SDL_Rect textRect);
+void fadeIn(SDL_Renderer* renderer, SDL_Texture* textTexture, SDL_Rect textRect);
+SDL_Rect drawStartButton(SDL_Renderer* renderer);
+void waitForStart(SDL_Renderer* renderer);
+std::string promptName(const std::string& prompt);
 
-# Set up fonts
-font = pygame.font.Font(None, 100)  # Default font with size 100 for main text
-button_font = pygame.font.Font(None, 50)  # Default font with size 50 for buttons
+int main(int argc, char* argv[]) {
+    // Initialize SDL
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        std::cerr << "Failed to initialize SDL: " << SDL_GetError() << std::endl;
+        return 1;
+    }
 
-# Generate starry background
-def draw_stars():
-    screen.fill(BLACK)  # Fill the screen with black
-    for _ in range(100):  # Draw 100 stars
-        x = random.randint(0, WIDTH)  # Random x-coordinate
-        y = random.randint(0, HEIGHT)  # Random y-coordinate
-        pygame.draw.circle(screen, WHITE, (x, y), 2)  # Draw a small white circle (star)
+    if (TTF_Init() < 0) {
+        std::cerr << "Failed to initialize SDL_ttf: " << TTF_GetError() << std::endl;
+        return 1;
+    }
 
-# Create fade-out effect
-def draw_stars():
-    ...
-def fade_out(text_surface, text_rect):
-    ...
-def fade_in(new_text_surface, new_text_rect):
-    ...
-def draw_start_button():
-    ...
-def wait_for_start():
-    ...
+    // Create window and renderer
+    window = SDL_CreateWindow("Hello Bubble Fade", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
+    // Seed random number generator
+    std::srand(static_cast<unsigned>(std::time(0)));
 
-# Create fade-in effect
-def fade_in(new_text_surface, new_text_rect):
-    for alpha in range(0, 256, 5):  # Gradually increase alpha value
-        draw_stars()  # Redraw starry background
-        new_text_surface.set_alpha(alpha)  # Set alpha value of the text
-        screen.blit(new_text_surface, new_text_rect)  # Blit (draw) the text on the screen
-        pygame.display.update()  # Update the display
-        time.sleep(0.05)  # Delay for effect
+    drawStars(renderer);
+    waitForStart(renderer);
 
-# Draw start button
-def draw_start_button():
-    button_rect = pygame.Rect(WIDTH // 2 - 75, HEIGHT // 2 - 25, 150, 50)  # Define button rectangle
-    pygame.draw.rect(screen, GREEN, button_rect)  # Draw green rectangle (button)
-    text_surface = button_font.render("START", True, BLACK)  # Render "START" text
-    text_rect = text_surface.get_rect(center=button_rect.center)  # Center text in button
-    screen.blit(text_surface, text_rect)  # Blit (draw) the text on the button
-    pygame.display.update()  # Update the display
-    return button_rect  # Return button rectangle for collision detection
+    // Display initial message
+    drawStars(renderer);
+    SDL_Texture* helloTexture = createTextTexture(renderer, "HELLO", WHITE, 100);
+    SDL_Rect helloRect = {WIDTH / 2 - 100, HEIGHT / 2 - 50, 200, 100};
+    SDL_RenderCopy(renderer, helloTexture, nullptr, &helloRect);
+    SDL_RenderPresent(renderer);
+    sleep(1);
 
-# Wait for start button press
-def wait_for_start():
-    button_rect = draw_start_button()  # Draw start button and get its rectangle
-    waiting = True  # Initialize waiting flag
-    while waiting:  # Loop until the start button is pressed
-        for event in pygame.event.get():  # Iterate over events
-            if event.type == pygame.QUIT:  # If quit event, exit
-                pygame.quit()
-                exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:  # If mouse button pressed
-                if button_rect.collidepoint(event.pos):  # Check if click is on button
-                    waiting = False  # Exit the loop
-# Main program flow
-draw_stars()  # Draw starry background
-wait_for_start()  # Wait for start button press
+    // Ask for user's name
+    std::string userName = promptName("What is your name? ");
+    
+    // Update text with user's name
+    std::string greetingText = "HELLO " + userName;
+    SDL_Texture* greetingTexture = createTextTexture(renderer, greetingText, WHITE, 100);
+    SDL_Rect greetingRect = {WIDTH / 2 - 100, HEIGHT / 2 - 50, 200, 100};
+    
+    drawStars(renderer);
+    SDL_RenderCopy(renderer, greetingTexture, nullptr, &greetingRect);
+    SDL_RenderPresent(renderer);
+    sleep(1);
+    
+    fadeOut(renderer, greetingTexture, greetingRect);
+    
+    // Create final greeting
+    std::string finalGreetingText = "Hello " + userName + "!";
+    SDL_Texture* finalGreetingTexture = createTextTexture(renderer, finalGreetingText, WHITE, 100);
+    SDL_Rect finalGreetingRect = {WIDTH / 2 - 100, HEIGHT / 2 - 50, 200, 100};
+    
+    fadeIn(renderer, finalGreetingTexture, finalGreetingRect);
+    sleep(2);
+    fadeOut(renderer, finalGreetingTexture, finalGreetingRect);
+    sleep(3);
+    
+    // Ask for a name or use default
+    std::string defaultName = "Djaquaevian";
+    std::string enteredName = promptName("Hello, my name is... (Press Enter to use default: Djaquaevian) ");
+    if (enteredName.empty()) {
+        enteredName = defaultName;
+    }
+    
+    // Create new introduction text
+    std::string introText = "Hello, my name is " + enteredName + "!";
+    SDL_Texture* introTexture = createTextTexture(renderer, introText, WHITE, 100);
+    SDL_Rect introRect = {WIDTH / 2 - 150, HEIGHT / 2 - 50, 300, 100};
+    
+    fadeIn(renderer, introTexture, introRect);
+    sleep(2);
+    
+    // Clean up and quit
+    SDL_DestroyTexture(helloTexture);
+    SDL_DestroyTexture(greetingTexture);
+    SDL_DestroyTexture(finalGreetingTexture);
+    SDL_DestroyTexture(introTexture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    TTF_Quit();
+    SDL_Quit();
+    
+    return 0;
+}
 
-# Display initial message
-draw_stars()  # Draw starry background
-text = font.render("HELLO", True, WHITE)  # Render "HELLO" text in white
-text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))  # Center text on screen
-screen.blit(text, text_rect)  # Blit (draw) the text on the screen
-pygame.display.update()  # Update the display
-time.sleep(1)  # Delay for 1 second
+SDL_Texture* createTextTexture(SDL_Renderer* renderer, const std::string& text, SDL_Color color, int fontSize) {
+    TTF_Font* font = TTF_OpenFont("/path/to/font.ttf", fontSize);
+    if (!font) {
+        std::cerr << "Failed to open font: " << TTF_GetError() << std::endl;
+        exit(1);
+    }
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), color);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+    TTF_CloseFont(font);
+    return texture;
+}
 
-# Ask for user's name
-user_name = input("What is your name? ")  # Prompt user for their name
+void drawStars(SDL_Renderer* renderer) {
+    SDL_SetRenderDrawColor(renderer, BLACK.r, BLACK.g, BLACK.b, SDL_ALPHA_OPAQUE);
+    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, WHITE.r, WHITE.g, WHITE.b, SDL_ALPHA_OPAQUE);
+    for (int i = 0; i < 100; ++i) {
+        int x = std::rand() % WIDTH;
+        int y = std::rand() % HEIGHT;
+        SDL_RenderDrawPoint(renderer, x, y);
+    }
+}
 
-# Update text with user's name
-greeting_text = font.render(f"HELLO {user_name.upper()}", True, WHITE)  # Render greeting text
-greeting_rect = greeting_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))  # Center greeting text
-
-# Show updated greeting
-draw_stars()  # Draw starry background
-screen.blit(greeting_text, greeting_rect)  # Blit (draw) greeting text on the screen
-pygame.display.update()  # Update the display
-time.sleep(1)  # Delay for 1 second
-
-fade_out(greeting_text, greeting_rect)  # Fade out greeting text
-
-# Create final greeting
-final_greeting_text = font.render(f"Hello {user_name.capitalize()}!", True, WHITE)  # Render final greeting text
-final_greeting_rect = final_greeting_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))  # Center final greeting text
-
-fade_in(final_greeting_text, final_greeting_rect)  # Fade in final greeting text
-
-time.sleep(2)  # Delay for 2 seconds
-fade_out(final_greeting_text, final_greeting_rect)  # Fade out final greeting text
-
-time.sleep(3)  # Delay for 3 seconds
-
-# Ask for a name or use default
-default_name = "Djaquaevian"  # Set default name
-entered_name = input("Hello, my name is... (Press Enter to use default: Djaquaevian) ")  # Prompt user for name
-if not entered_name:
-    entered_name = default_name  # Use default name if none entered
-
-# Create new introduction text
-intro_text = font.render(f"Hello, my name is {entered_name}!", True, WHITE)  # Render introduction text
-intro_rect = intro_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))  # Center introduction text
-
-fade_in(intro_text, intro_rect)  # Fade in introduction text
-
-time.sleep(2)  # Delay for 2 seconds
-pygame.quit()  # Quit pygame
-
+void fadeOut(SDL_Renderer* renderer, SDL_Texture* textTexture, SDL_Rect textRect) {
+    for (int alpha = 255; alpha >=
