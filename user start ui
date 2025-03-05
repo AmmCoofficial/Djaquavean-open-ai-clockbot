@@ -50,34 +50,4 @@ def draw_start_button():
     pygame.draw.rect(screen, GREEN, button_rect)
     text_surface = button_font.render("START", True, BLACK)
     text_rect = text_surface.get_rect(center=button_rect.center)
-    screen.blit(text_surface, text_rect)
-    pygame.display.update()
-    return button_rect
-
-def wait_for_start():
-    """Wait for the user to click the start button."""
-    button_rect = draw_start_button()
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if button_rect.collidepoint(event.pos):
-                    waiting = False
-
-def main():
-    """Main function to run the program."""
-    draw_stars()
-    wait_for_start()
-
-    draw_stars()
-    text = font.render("HELLO", True, WHITE)
-    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-    fade_in(text, text_rect)
-    pygame.time.wait(2000)
-    fade_out(text, text_rect)
-
-if __name__ == "__main__":
-    main()
+    screen.blit(text_surface
