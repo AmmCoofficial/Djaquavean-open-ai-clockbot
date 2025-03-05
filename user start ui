@@ -1,53 +1,114 @@
-import pygame
-import random
+#include <SDL.h>
+#include <cstdlib>
+#include <ctime>
 
-# Initialize pygame
-pygame.init()
+// Initialize SDL
+SDL_Window* window = NULL;
+SDL_Renderer* renderer = NULL;
+const int WIDTH = 500;
+const int HEIGHT = 300;
 
-# Set up display
-WIDTH, HEIGHT = 500, 300
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Hello Bubble Fade")
+void draw_stars() {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    for (int i = 0; i < 100; ++i) {
+        int x = rand() % WIDTH;
+        int y = rand() % HEIGHT;
+        SDL_RenderDrawPoint(renderer, x, y);
+    }
+}
 
-# Define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GREEN = (0, 255, 0)
+void fade_out(SDL_Texture* texture, SDL_Rect text_rect) {
+    for (int alpha = 255; alpha >= 0; alpha -= 5) {
+        draw_stars();
+        SDL_SetTextureAlphaMod(texture, alpha);
+        SDL_RenderCopy(renderer, texture, NULL, &text_rect);
+        SDL_RenderPresent(renderer);
+        SDL_Delay(50);
+    }
+}
 
-# Set up fonts
-font = pygame.font.Font(None, 100)  # Default font, size 100
-button_font = pygame.font.Font(None, 50)
+void fade_in(SDL_Texture* new_texture, SDL_Rect new_text_rect) {
+    for (int alpha = 0; alpha <= 255; alpha += 5) {
+        draw_stars();
+        SDL_SetTextureAlphaMod(new_texture, alpha);
+        SDL_RenderCopy(renderer, new_texture, NULL, &new_text_rect);
+        SDL_RenderPresent(renderer);
+        SDL_Delay(50);
+    }
+}
 
-def draw_stars():
-    """Draw stars on the screen."""
-    screen.fill(BLACK)
-    for _ in range(100):
-        x = random.randint(0, WIDTH)
-        y = random.randint(0, HEIGHT)
-        pygame.draw.circle(screen, WHITE, (x, y), 2)
+void draw_start_button(SDL_Rect& button_rect, SDL_Texture* button_texture) {
+    button_rect = {WIDTH / 2 - 75, HEIGHT / 2 - 25, 150, 50};
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    SDL_RenderFillRect(renderer, &button_rect);
+    SDL_RenderCopy(renderer, button_texture, NULL, &button_rect);
+}
 
-def fade_out(text_surface, text_rect):
-    """Fade out the text."""
-    for alpha in range(255, -1, -5):
-        draw_stars()
-        text_surface.set_alpha(alpha)
-        screen.blit(text_surface, text_rect)
-        pygame.display.update()
-        pygame.time.wait(50)
+int main(int argc, char* argv[]) {
+    srand(time(0));
 
-def fade_in(new_text_surface, new_text_rect):
-    """Fade in the new text."""
-    for alpha in range(0, 256, 5):
-        draw_stars()
-        new_text_surface.set_alpha(alpha)
-        screen.blit(new_text_surface, new_text_rect)
-        pygame.display.update()
-        pygame.time.wait(50)
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+        return 1;
+    }
 
-def draw_start_button():
-    """Draw the start button and return its rectangle."""
-    button_rect = pygame.Rect(WIDTH // 2 - 75, HEIGHT // 2 - 25, 150, 50)
-    pygame.draw.rect(screen, GREEN, button_rect)
-    text_surface = button_font.render("START", True, BLACK)
-    text_rect = text_surface.get_rect(center=button_rect.center)
-    screen.blit(text_surface
+    window = SDL_CreateWindow("Hello Bubble Fade", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
+    if (!window) {
+        SDL_Quit();
+        return 1;
+    }
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (!renderer) {
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 1;
+    }
+
+    TTF_Init();
+    TTF_Font* font = TTF_OpenFont("arial.ttf", 100);
+    TTF_Font* button_font = TTF_OpenFont("arial.ttf", 50);
+
+    SDL_Color white = {255, 255, 255, 255};
+    SDL_Color black = {0, 0, 0, 255};
+
+    SDL_Surface* text_surface = TTF_RenderText_Blended(font, "Hello", white);
+    SDL_Texture* text_texture = SDL_CreateTextureFromSurface(renderer, text_surface);
+    SDL_Rect text_rect = {WIDTH / 2 - text_surface->w / 2, HEIGHT / 2 - text_surface->h / 2, text_surface->w, text_surface->h};
+
+    SDL_Surface* button_surface = TTF_RenderText_Blended(button_font, "START", black);
+    SDL_Texture* button_texture = SDL_CreateTextureFromSurface(renderer, button_surface);
+
+    SDL_Rect button_rect;
+    draw_start_button(button_rect, button_texture);
+
+    SDL_Event e;
+    bool quit = false;
+    while (!quit) {
+        while (SDL_PollEvent(&e) != 0) {
+            if (e.type == SDL_QUIT) {
+                quit = true;
+            }
+        }
+
+        draw_stars();
+        fade_in(text_texture, text_rect);
+        SDL_Delay(1000);
+        fade_out(text_texture, text_rect);
+        SDL_RenderPresent(renderer);
+    }
+
+    SDL_FreeSurface(text_surface);
+    SDL_DestroyTexture(text_texture);
+    SDL_FreeSurface(button_surface);
+    SDL_DestroyTexture(button_texture);
+    TTF_CloseFont(font);
+    TTF_CloseFont(button_font);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    TTF_Quit();
+    SDL_Quit();
+
+    return 0;
+}
