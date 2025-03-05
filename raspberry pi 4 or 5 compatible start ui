@@ -126,3 +126,4 @@ fade_in(intro_text, intro_rect)  # Fade in introduction text
 
 time.sleep(2)  # Delay for 2 seconds
 pygame.quit()  # Quit pygame
+
