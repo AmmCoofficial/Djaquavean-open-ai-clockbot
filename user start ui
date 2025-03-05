@@ -1,5 +1,4 @@
 import pygame
-import time
 import random
 
 # Initialize pygame
@@ -8,7 +7,6 @@ pygame.init()
 # Set up display
 WIDTH, HEIGHT = 500, 300
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-screen.fill((0, 0, 0))
 pygame.display.set_caption("Hello Bubble Fade")
 
 # Define colors
@@ -16,37 +14,35 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 
-# Set up font
+# Set up fonts
 font = pygame.font.Font(None, 100)  # Default font, size 100
 button_font = pygame.font.Font(None, 50)
 
-# Generate starry background
 def draw_stars():
     screen.fill(BLACK)
-    for _ in range(100):  # Number of stars
+    for _ in range(100):
         x = random.randint(0, WIDTH)
         y = random.randint(0, HEIGHT)
-        pygame.draw.circle(screen, WHITE, (x, y), 2)  # Small white dots as stars
+        pygame.draw.circle(screen, WHITE, (x, y), 2)
 
 def fade_out(text_surface, text_rect):
-    for alpha in range(255, -1, -5):  # Decrease alpha value
+    for alpha in range(255, -1, -5):
         draw_stars()
         text_surface.set_alpha(alpha)
         screen.blit(text_surface, text_rect)
         pygame.display.update()
-        time.sleep(0.05)  # Small delay for effect
+        pygame.time.wait(50)
 
 def fade_in(new_text_surface, new_text_rect):
-    for alpha in range(0, 256, 5):  # Increase alpha value
+    for alpha in range(0, 256, 5):
         draw_stars()
         new_text_surface.set_alpha(alpha)
         screen.blit(new_text_surface, new_text_rect)
         pygame.display.update()
-        time.sleep(0.05)  # Small delay for effect
+        pygame.time.wait(50)
 
-# Draw start button
 def draw_start_button():
-    button_rect = pygame.Rect(WIDTH//2 - 75, HEIGHT//2 - 25, 150, 50)
+    button_rect = pygame.Rect(WIDTH // 2 - 75, HEIGHT // 2 - 25, 150, 50)
     pygame.draw.rect(screen, GREEN, button_rect)
     text_surface = button_font.render("START", True, BLACK)
     text_rect = text_surface.get_rect(center=button_rect.center)
@@ -54,7 +50,6 @@ def draw_start_button():
     pygame.display.update()
     return button_rect
 
-# Wait for button press
 def wait_for_start():
     button_rect = draw_start_button()
     waiting = True
@@ -67,84 +62,10 @@ def wait_for_start():
                 if button_rect.collidepoint(event.pos):
                     waiting = False
 
-# Draw stars
-draw_stars()
-wait_for_start()
-
-# Display initial message
-draw_stars()
-text = font.render("HELLO", True, WHITE)
-text_rect = text.get_rect(center=(WIDTH//2, HEIGHT//2))
-screen.blit(text, text_rect)
-pygame.display.update()
-
-time.sleep(1)  # Show "HELLO" before asking for the name
-
-# Ask for user's name (without breaking Pygame)
-user_name = ""
-typing = True
-
-while typing:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                typing = False
-            elif event.key == pygame.K_BACKSPACE:
-                user_name = user_name[:-1]
-            else:
-                user_name += event.unicode  # Append typed characters
+def main():
+    draw_stars()
+    wait_for_start()
 
     draw_stars()
-    prompt_text = font.render(f"HELLO {user_name.upper()}", True, WHITE)
-    screen.blit(prompt_text, prompt_text.get_rect(center=(WIDTH//2, HEIGHT//2)))
-    pygame.display.update()
-
-# Fade out old text
-fade_out(prompt_text, prompt_text.get_rect(center=(WIDTH//2, HEIGHT//2)))
-
-# Create new greeting text
-final_greeting_text = font.render(f"Hello {user_name.capitalize()}!", True, WHITE)
-final_greeting_rect = final_greeting_text.get_rect(center=(WIDTH//2, HEIGHT//2))
-
-fade_in(final_greeting_text, final_greeting_rect)
-
-time.sleep(2)  # Show final greeting before fading out
-fade_out(final_greeting_text, final_greeting_rect)
-
-time.sleep(3)  # Wait 3 seconds before next prompt
-
-# Ask for a name or use default
-default_name = "Djaquaevian"
-entered_name = ""
-
-typing = True
-while typing:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                typing = False
-            elif event.key == pygame.K_BACKSPACE:
-                entered_name = entered_name[:-1]
-            else:
-                entered_name += event.unicode  # Append typed characters
-
-    draw_stars()
-    if entered_name:
-        text_display = f"Hello, my name is {entered_name}!"
-    else:
-        text_display = f"Hello, my name is {default_name}!"
-    
-    intro_text = font.render(text_display, True, WHITE)
-    screen.blit(intro_text, intro_text.get_rect(center=(WIDTH//2, HEIGHT//2)))
-    pygame.display.update()
-
-fade_in(intro_text, intro_text.get_rect(center=(WIDTH//2, HEIGHT//2)))
-
-time.sleep(2)  # Show introduction before quitting
-pygame.quit()
+    text = font.render("HELLO", True, WHITE)
+    text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT
