@@ -155,7 +155,7 @@
             text-shadow: 0 0 15px cyan;
             margin-bottom: 20px;
         }
-        #clock, #date, #temperature {
+        #clock, #date, #temperature, #dayOfWeek {
             font-size: 22px;
             color: yellow;
             text-shadow: 0 0 10px yellow, 0 0 20px orange;
@@ -202,6 +202,7 @@
         <h2>Dashboard</h2>
         <div id="clock">Clock: Loading...</div>
         <div id="date">Date: Loading...</div>
+        <div id="dayOfWeek">Day: Loading...</div> <!-- Added the day of the week here -->
         <div id="temperature" onclick="toggleTempUnit()">Temperature: Loading...</div>
         <button class="pulse-button" onclick="alert('You clicked the pulse button!')">Click me!</button>
     </div>
@@ -300,7 +301,7 @@
             setTimeout(() => {
                 let finalGreeting = document.createElement('div');
                 finalGreeting.id = 'finalGreeting';
-                finalGreeting.innerText = `Welcome, ${newName}!`;
+                finalGreeting.innerText = `Hi i'm, ${newName}! I will be your AI assistany`;
                 fadeIn(finalGreeting);
                 document.body.appendChild(finalGreeting);
                 setTimeout(() => {
@@ -333,22 +334,21 @@
             const clockElement = document.getElementById('clock');
             const dateElement = document.getElementById('date');
             const temperatureElement = document.getElementById('temperature');
+            const dayOfWeekElement = document.getElementById('dayOfWeek');  // New element for day
             const now = new Date();
             
             clockElement.textContent = `Clock: ${now.toLocaleTimeString()}`;
             dateElement.textContent = `Date: ${now.toLocaleDateString()}`;
-            // Placeholder temperature update
+            
+            const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            dayOfWeekElement.textContent = `Day: ${daysOfWeek[now.getDay()]}`;
+            
             if (isCelsius) {
                 temperatureElement.textContent = `Temperature: ${tempInCelsius}°C`;
             } else {
                 let tempInFahrenheit = tempInCelsius * 9/5 + 32;
                 temperatureElement.textContent = `Temperature: ${tempInFahrenheit.toFixed(2)}°F`;
             }
-        }
-
-        function toggleTempUnit() {
-            isCelsius = !isCelsius;
-            updateTime();  // Update temperature display
         }
 
         setInterval(updateTime, 1000);
