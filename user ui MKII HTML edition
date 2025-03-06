@@ -89,6 +89,50 @@
             opacity: 0;
             transition: opacity 1s ease-in-out;
         }
+
+        /* Modified animation for the final greeting */
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red; }
+            50% { text-shadow: 0 0 25px blue, 0 0 40px purple, 0 0 60px pink; }
+            100% { text-shadow: 0 0 30px green, 0 0 50px cyan, 0 0 70px magenta; }
+        }
+        #finalGreeting {
+            font-size: 48px;
+            font-weight: bolder;
+            color: white;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        /* Balls animation for transition */
+        @keyframes fillScreen {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(25);
+                opacity: 0;
+            }
+        }
+
+        .ball {
+            position: absolute;
+            border-radius: 50%;
+            background-color: yellow;
+            width: 50px;
+            height: 50px;
+            animation: fillScreen 1.5s ease-out forwards;
+        }
+
+        .ball-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -106,8 +150,21 @@
         <button id="defaultNameButton" onclick="useDefaultName()">Use Default Name</button>
         <button onclick="finalizeName()">Confirm</button>
     </div>
+    <div class="ball-container" id="ballContainer"></div>
     
     <script>
+        function createBalls() {
+            const ballContainer = document.getElementById('ballContainer');
+            for (let i = 0; i < 20; i++) {
+                const ball = document.createElement('div');
+                ball.classList.add('ball');
+                ball.style.top = `${Math.random() * 100}%`;
+                ball.style.left = `${Math.random() * 100}%`;
+                ball.style.animationDelay = `${Math.random() * 0.5}s`;
+                ballContainer.appendChild(ball);
+            }
+        }
+
         function fadeIn(element) {
             element.style.display = 'block';
             setTimeout(() => { element.classList.add('visible'); }, 10);
@@ -120,16 +177,19 @@
 
         function startSequence() {
             document.querySelector('.button').style.display = 'none';
-            let helloText = document.getElementById('helloText');
-            fadeIn(helloText);
+            createBalls();  // Add balls before starting the sequence
             setTimeout(() => {
-                fadeOut(helloText);
+                let helloText = document.getElementById('helloText');
+                fadeIn(helloText);
                 setTimeout(() => {
-                    fadeIn(document.getElementById('nameContainer'));
-                }, 1000);
-            }, 2000);
+                    fadeOut(helloText);
+                    setTimeout(() => {
+                        fadeIn(document.getElementById('nameContainer'));
+                    }, 1000);
+                }, 2000);
+            }, 1500);
         }
-        
+
         function showConfirmButton() {
             document.getElementById('confirmButton').style.display = 'block';
         }
@@ -178,6 +238,7 @@
             fadeOut(document.getElementById('renameContainer'));
             setTimeout(() => {
                 let finalGreeting = document.getElementById('greeting');
+                finalGreeting.id = "finalGreeting"; // Adding the glowing effect to the final greeting
                 finalGreeting.innerHTML = `Hello, I'm ${secondName},<br>and I will be your bedside AI helper.`;
                 fadeIn(finalGreeting);
             }, 1000);
