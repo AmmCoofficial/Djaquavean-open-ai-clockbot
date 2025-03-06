@@ -18,13 +18,13 @@
             overflow: hidden;
             position: relative;
         }
-        
+
         @keyframes waves {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        
+
         body::before {
             content: "";
             position: absolute;
@@ -184,6 +184,7 @@
                 setTimeout(() => {
                     fadeOut(helloText);
                     setTimeout(() => {
+                        createBalls();  // Trigger balls transition before name container
                         fadeIn(document.getElementById('nameContainer'));
                     }, 1000);
                 }, 2000);
@@ -211,17 +212,19 @@
                 return;
             }
             fadeOut(document.getElementById('nameContainer'));
-            let greetingText = document.getElementById('greeting');
-            greetingText.innerText = `Hello, ${name}!`;
+            createBalls();  // Trigger balls transition before showing greeting
             setTimeout(() => {
+                let greetingText = document.getElementById('greeting');
+                greetingText.innerText = `Hello, ${name}!`;
                 fadeIn(greetingText);
                 setTimeout(() => {
                     fadeOut(greetingText);
                     setTimeout(() => {
+                        createBalls();  // Trigger balls transition before renaming container
                         fadeIn(document.getElementById('renameContainer'));
                     }, 1000);
                 }, 3000);
-            }, 1000);
+            }, 1500); // Delay showing the next screen until balls finish
         }
 
         function useDefaultName() {
@@ -236,12 +239,13 @@
                 return;
             }
             fadeOut(document.getElementById('renameContainer'));
+            createBalls();  // Trigger balls transition before final greeting
             setTimeout(() => {
                 let finalGreeting = document.getElementById('greeting');
                 finalGreeting.id = "finalGreeting"; // Adding the glowing effect to the final greeting
                 finalGreeting.innerHTML = `Hello, I'm ${secondName},<br>and I will be your bedside AI helper.`;
                 fadeIn(finalGreeting);
-            }, 1000);
+            }, 1500); // Delay showing the final greeting until balls finish
         }
     </script>
 </body>
