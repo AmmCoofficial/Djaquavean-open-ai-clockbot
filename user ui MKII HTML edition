@@ -90,19 +90,6 @@
             transition: opacity 1s ease-in-out;
         }
 
-        /* Modified animation for the final greeting */
-        @keyframes glow {
-            0% { text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red; }
-            50% { text-shadow: 0 0 25px blue, 0 0 40px purple, 0 0 60px pink; }
-            100% { text-shadow: 0 0 30px green, 0 0 50px cyan, 0 0 70px magenta; }
-        }
-        #finalGreeting {
-            font-size: 48px;
-            font-weight: bolder;
-            color: white;
-            animation: glow 1.5s infinite alternate;
-        }
-
         /* Balls animation for transition */
         @keyframes fillScreen {
             0% {
@@ -132,6 +119,33 @@
             z-index: 10;
             pointer-events: none;
         }
+
+        /* Dashboard styles */
+        #dashboard {
+            font-size: 24px;
+            color: white;
+            background-color: #222;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        #clock, #date, #temperature {
+            margin: 10px 0;
+        }
+
+        /* Final Greeting Glow effect */
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red; }
+            50% { text-shadow: 0 0 25px blue, 0 0 40px purple, 0 0 60px pink; }
+            100% { text-shadow: 0 0 30px green, 0 0 50px cyan, 0 0 70px magenta; }
+        }
+        #finalGreeting {
+            font-size: 48px;
+            font-weight: bolder;
+            color: white;
+            animation: glow 1.5s infinite alternate;
+        }
     </style>
 </head>
 <body>
@@ -151,6 +165,13 @@
     </div>
     <div class="ball-container" id="ballContainer"></div>
     
+    <!-- Dashboard Section -->
+    <div id="dashboard">
+        <div id="clock">Clock: Loading...</div>
+        <div id="date">Date: Loading...</div>
+        <div id="temperature">Temperature: Loading...</div>
+    </div>
+
     <script>
         function getRandomColor() {
             const colors = [
@@ -252,7 +273,52 @@
                 finalGreeting.id = "finalGreeting"; // Adding the glowing effect to the final greeting
                 finalGreeting.innerHTML = `Hello, I'm ${secondName},<br>and I will be your bedside AI helper.`;
                 fadeIn(finalGreeting);
+                setTimeout(() => {
+                    fadeOut(finalGreeting);
+                    setTimeout(() => {
+                        fadeIn(document.getElementById('dashboard'));
+                        updateDashboard();
+                    }, 1000); // Delay showing dashboard until final greeting fades out
+                }, 3000);
             }, 1500); // Delay showing the final greeting until balls finish
+        }
+
+        // Update the clock, date, and temperature
+        function updateDashboard() {
+            const clock = document.getElementById('clock');
+            const date = document.getElementById('date');
+            const temperature = document.getElementById('temperature');
+            
+            // Update date
+            const today = new Date();
+            date.innerText = `Date: ${today.toDateString()}`;
+            
+            // Update clock
+            setInterval(() => {
+                const time = new Date();
+                clock.innerText = `Clock: ${time.toLocaleTimeString()}`;
+            }, 1000);
+            
+            // Fetch temperature using the OpenWeatherMap API
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const apiKey = 'YOUR_API_KEY';  // Replace with your OpenWeatherMap API key
+                    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+                    
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            const temp = data.main.temp;
+                            temperature.innerText = `Temperature: ${temp}°C`;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching weather data:', error);
+                            temperature.innerText = `Temperature: Unable to retrieve data`;
+                        });
+                });
+            }
         }
     </script>
 </body>
