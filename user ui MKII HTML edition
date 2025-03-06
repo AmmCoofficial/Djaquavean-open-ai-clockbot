@@ -18,6 +18,26 @@
             overflow: hidden;
             position: relative;
         }
+        
+        @keyframes waves {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, blue, black, purple);
+            background-size: 200% 200%;
+            animation: waves 5s infinite alternate ease-in-out;
+            z-index: -1;
+        }
+
         .hidden { opacity: 0; transition: opacity 1s; display: none; }
         .visible { opacity: 1; transition: opacity 1s; display: block; }
         .button {
@@ -137,17 +157,6 @@
                     }, 1000);
                 }, 3000);
             }
-        }
-
-        function finalizeName() {
-            let newName = document.getElementById('renameInput').value;
-            if (newName.trim() !== "") {
-                alert(`Your final name is: ${newName}`);
-            }
-        }
-
-        function useDefaultName() {
-            alert("Your final name is: Djaqauvias");
         }
     </script>
 </body>
