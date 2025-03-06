@@ -154,7 +154,7 @@
     <div id="greeting" class="hidden"></div>
     <div id="renameContainer" class="hidden">
         <div>My name is:</div>
-        <input id="renameInput" type="text" placeholder="Djaqauvias" onkeydown="checkEnter(event, 'finalizeName')">
+        <input id="renameInput" type="text" placeholder="Djaquavian" onkeydown="checkEnter(event, 'finalizeName')">
         <button id="defaultNameButton" onclick="useDefaultName()">Confirm</button>
         <button onclick="finalizeName()">Use Default Name</button>
     </div>
@@ -209,7 +209,7 @@
         }
 
         function useDefaultName() {
-            let defaultName = "Djaqauvias"; // Default name value
+            let defaultName = "Djaquavian"; // Default name value
             document.getElementById('renameInput').value = defaultName; // Set the default name in the input
             finalizeName(); // Call finalizeName to proceed
         }
