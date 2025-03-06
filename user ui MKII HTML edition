@@ -118,7 +118,6 @@
         .ball {
             position: absolute;
             border-radius: 50%;
-            background-color: yellow;
             width: 50px;
             height: 50px;
             animation: fillScreen 1.5s ease-out forwards;
@@ -153,11 +152,19 @@
     <div class="ball-container" id="ballContainer"></div>
     
     <script>
+        function getRandomColor() {
+            const colors = [
+                "red", "blue", "green", "yellow", "purple", "cyan", "orange", "pink", "lime", "magenta"
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
         function createBalls() {
             const ballContainer = document.getElementById('ballContainer');
             for (let i = 0; i < 20; i++) {
                 const ball = document.createElement('div');
                 ball.classList.add('ball');
+                ball.style.backgroundColor = getRandomColor();  // Randomize ball color
                 ball.style.top = `${Math.random() * 100}%`;
                 ball.style.left = `${Math.random() * 100}%`;
                 ball.style.animationDelay = `${Math.random() * 0.5}s`;
