@@ -38,8 +38,8 @@
             z-index: -1;
         }
 
-        .hidden { opacity: 0; transition: opacity 1s; display: none; }
-        .visible { opacity: 1; transition: opacity 1s; display: block; }
+        .hidden { opacity: 0; transition: opacity 1s ease-in-out; display: none; }
+        .visible { opacity: 1; transition: opacity 1s ease-in-out; display: block; }
         .button {
             background-color: green;
             color: white;
@@ -87,7 +87,7 @@
         }
         #renameContainer.fade-out {
             opacity: 0;
-            transition: opacity 1s ease-out;
+            transition: opacity 1s ease-in-out;
         }
     </style>
 </head>
@@ -108,18 +108,24 @@
     </div>
     
     <script>
+        function fadeIn(element) {
+            element.style.display = 'block';
+            setTimeout(() => { element.classList.add('visible'); }, 10);
+        }
+        
+        function fadeOut(element) {
+            element.classList.remove('visible');
+            setTimeout(() => { element.style.display = 'none'; }, 1000);
+        }
+
         function startSequence() {
             document.querySelector('.button').style.display = 'none';
             let helloText = document.getElementById('helloText');
-            helloText.classList.remove('hidden');
-            helloText.classList.add('visible');
+            fadeIn(helloText);
             setTimeout(() => {
-                helloText.classList.remove('visible');
-                helloText.classList.add('hidden');
+                fadeOut(helloText);
                 setTimeout(() => {
-                    let nameContainer = document.getElementById('nameContainer');
-                    nameContainer.classList.remove('hidden');
-                    nameContainer.classList.add('visible');
+                    fadeIn(document.getElementById('nameContainer'));
                 }, 1000);
             }, 2000);
         }
@@ -144,22 +150,18 @@
                 alert("Please enter a valid name!");
                 return;
             }
-            let nameContainer = document.getElementById('nameContainer');
-            nameContainer.classList.remove('visible');
-            nameContainer.classList.add('hidden');
+            fadeOut(document.getElementById('nameContainer'));
             let greetingText = document.getElementById('greeting');
             greetingText.innerText = `Hello, ${name}!`;
-            greetingText.classList.remove('hidden');
-            greetingText.classList.add('visible');
             setTimeout(() => {
-                greetingText.classList.remove('visible');
-                greetingText.classList.add('hidden');
+                fadeIn(greetingText);
                 setTimeout(() => {
-                    let renameContainer = document.getElementById('renameContainer');
-                    renameContainer.classList.remove('hidden');
-                    renameContainer.classList.add('visible');
-                }, 1000);
-            }, 3000);
+                    fadeOut(greetingText);
+                    setTimeout(() => {
+                        fadeIn(document.getElementById('renameContainer'));
+                    }, 1000);
+                }, 3000);
+            }, 1000);
         }
 
         function useDefaultName() {
@@ -173,14 +175,11 @@
                 alert("Please enter a valid name!");
                 return;
             }
-            let renameContainer = document.getElementById('renameContainer');
-            renameContainer.classList.add('fade-out');
+            fadeOut(document.getElementById('renameContainer'));
             setTimeout(() => {
-                renameContainer.style.display = 'none';
                 let finalGreeting = document.getElementById('greeting');
                 finalGreeting.innerHTML = `Hello, I'm ${secondName},<br>and I will be your bedside AI helper.`;
-                finalGreeting.classList.remove('hidden');
-                finalGreeting.classList.add('visible');
+                fadeIn(finalGreeting);
             }, 1000);
         }
     </script>
