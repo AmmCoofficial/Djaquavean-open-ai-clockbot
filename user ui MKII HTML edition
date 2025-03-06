@@ -104,6 +104,23 @@
             display: block;
             margin: 10px auto 0;
         }
+
+        /* Fading out the renameContainer */
+        #renameContainer.fade-out {
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+
+        /* Styling the final greeting */
+        #greeting {
+            font-size: 24px;
+            font-weight: bold;
+            color: yellow;
+            text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red;
+            animation: flash 1s infinite alternate;
+            text-align: center;
+            transition: opacity 1s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -111,13 +128,13 @@
     <div id="helloText" class="hidden bubble-text">Hello</div>
     <div id="nameContainer" class="hidden">
         <div id="namePrompt">What is your name?</div>
-        <input id="nameInput" type="text" oninput="showConfirmButton()">
+        <input id="nameInput" type="text" oninput="showConfirmButton()" onkeydown="checkEnter(event, 'submitName')">
         <button id="confirmButton" onclick="submitName()">Confirm</button>
     </div>
     <div id="greeting" class="hidden"></div>
     <div id="renameContainer" class="hidden">
         <div>My name is:</div>
-        <input id="renameInput" type="text" placeholder="Djaqauvias">
+        <input id="renameInput" type="text" placeholder="Djaqauvias" onkeydown="checkEnter(event, 'finalizeName')">
         <button id="defaultNameButton" onclick="useDefaultName()">Confirm</button>
         <button onclick="finalizeName()">Use Default Name</button>
     </div>
@@ -141,22 +158,57 @@
             confirmButton.style.display = 'block';
         }
 
-        function submitName() {
-            let name = document.getElementById('nameInput').value;
-            if (name.trim() !== "") {
-                document.getElementById('nameContainer').classList.remove('visible');
-                document.getElementById('nameContainer').classList.add('hidden');
-                let greetingText = document.getElementById('greeting');
-                greetingText.innerText = `Hello, ${name}!`;
-                greetingText.classList.add('visible');
-                setTimeout(() => {
-                    greetingText.classList.remove('visible');
-                    greetingText.classList.add('hidden');
-                    setTimeout(() => {
-                        document.getElementById('renameContainer').classList.add('visible');
-                    }, 1000);
-                }, 3000);
+        function checkEnter(event, action) {
+            if (event.key === 'Enter') {
+                if (action === 'submitName') {
+                    submitName();
+                } else if (action === 'finalizeName') {
+                    finalizeName();
+                }
             }
+        }
+
+        function submitName() {
+            let name = document.getElementById('nameInput').value.trim();
+            if (name === "") {
+                alert("Please enter a valid name!");
+                return;
+            }
+            document.getElementById('nameContainer').classList.remove('visible');
+            document.getElementById('nameContainer').classList.add('hidden');
+            let greetingText = document.getElementById('greeting');
+            greetingText.innerText = `Hello, ${name}!`;
+            greetingText.classList.add('visible');
+            setTimeout(() => {
+                greetingText.classList.remove('visible');
+                greetingText.classList.add('hidden');
+                setTimeout(() => {
+                    document.getElementById('renameContainer').classList.add('visible');
+                }, 1000);
+            }, 3000);
+        }
+
+        function useDefaultName() {
+            let defaultName = "Djaqauvias"; // Default name value
+            document.getElementById('renameInput').value = defaultName; // Set the default name in the input
+            finalizeName(); // Call finalizeName to proceed
+        }
+
+        function finalizeName() {
+            let secondName = document.getElementById('renameInput').value.trim();
+            if (secondName === "") {
+                alert("Please enter a valid name!");
+                return;
+            }
+            // Hide the rename container with fade-out effect
+            document.getElementById('renameContainer').classList.add('fade-out');
+            
+            // After fade out, display the new greeting
+            setTimeout(() => {
+                let finalGreeting = document.getElementById('greeting');
+                finalGreeting.innerHTML = `Hello, I'm ${secondName},<br>and I will be your bedside AI helper.`;
+                finalGreeting.classList.add('visible');
+            }, 1000);  // Adjust the timeout to match the fade-out duration
         }
     </script>
 </body>
