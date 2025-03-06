@@ -49,29 +49,12 @@
             cursor: pointer;
             border-radius: 5px;
         }
-        .bubble-text {
+        .bubble-text, #greeting, #renameContainer, #namePrompt {
             font-size: 32px;
             font-weight: bold;
             color: yellow;
             text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red;
             animation: flash 1s infinite alternate;
-        }
-        #greeting, #renameContainer {
-            font-size: 32px;
-            font-weight: bold;
-            color: yellow;
-            text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red;
-            animation: flash 1s infinite alternate;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        #namePrompt {
-            font-size: 28px;
-            font-weight: bold;
-            color: yellow;
-            text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red;
         }
         #nameInput, #renameInput {
             font-size: 22px;
@@ -86,13 +69,12 @@
             text-shadow: 0 0 10px yellow;
             box-shadow: 0 0 20px yellow;
             transition: all 0.3s ease-in-out;
-            position: relative;
         }
         #nameInput:focus, #renameInput:focus {
             box-shadow: 0 0 25px orange;
             border-color: orange;
         }
-        #confirmButton, #defaultNameButton {
+        #confirmButton {
             margin-top: 15px;
             padding: 10px 20px;
             font-size: 18px;
@@ -101,25 +83,11 @@
             border-radius: 5px;
             background-color: green;
             color: white;
-            display: block;
-            margin: 10px auto 0;
+            display: none;
         }
-
-        /* Fading out the renameContainer */
         #renameContainer.fade-out {
             opacity: 0;
             transition: opacity 1s ease-out;
-        }
-
-        /* Styling the final greeting */
-        #greeting {
-            font-size: 24px;
-            font-weight: bold;
-            color: yellow;
-            text-shadow: 0 0 10px yellow, 0 0 20px orange, 0 0 30px red;
-            animation: flash 1s infinite alternate;
-            text-align: center;
-            transition: opacity 1s ease-in-out;
         }
     </style>
 </head>
@@ -135,27 +103,29 @@
     <div id="renameContainer" class="hidden">
         <div>My name is:</div>
         <input id="renameInput" type="text" placeholder="Djaquavian" onkeydown="checkEnter(event, 'finalizeName')">
-        <button id="defaultNameButton" onclick="useDefaultName()">Confirm</button>
-        <button onclick="finalizeName()">Use Default Name</button>
+        <button id="defaultNameButton" onclick="useDefaultName()">Use Default Name</button>
+        <button onclick="finalizeName()">Confirm</button>
     </div>
     
     <script>
         function startSequence() {
             document.querySelector('.button').style.display = 'none';
             let helloText = document.getElementById('helloText');
+            helloText.classList.remove('hidden');
             helloText.classList.add('visible');
             setTimeout(() => {
                 helloText.classList.remove('visible');
                 helloText.classList.add('hidden');
                 setTimeout(() => {
-                    document.getElementById('nameContainer').classList.add('visible');
+                    let nameContainer = document.getElementById('nameContainer');
+                    nameContainer.classList.remove('hidden');
+                    nameContainer.classList.add('visible');
                 }, 1000);
             }, 2000);
         }
         
         function showConfirmButton() {
-            let confirmButton = document.getElementById('confirmButton');
-            confirmButton.style.display = 'block';
+            document.getElementById('confirmButton').style.display = 'block';
         }
 
         function checkEnter(event, action) {
@@ -174,24 +144,27 @@
                 alert("Please enter a valid name!");
                 return;
             }
-            document.getElementById('nameContainer').classList.remove('visible');
-            document.getElementById('nameContainer').classList.add('hidden');
+            let nameContainer = document.getElementById('nameContainer');
+            nameContainer.classList.remove('visible');
+            nameContainer.classList.add('hidden');
             let greetingText = document.getElementById('greeting');
             greetingText.innerText = `Hello, ${name}!`;
+            greetingText.classList.remove('hidden');
             greetingText.classList.add('visible');
             setTimeout(() => {
                 greetingText.classList.remove('visible');
                 greetingText.classList.add('hidden');
                 setTimeout(() => {
-                    document.getElementById('renameContainer').classList.add('visible');
+                    let renameContainer = document.getElementById('renameContainer');
+                    renameContainer.classList.remove('hidden');
+                    renameContainer.classList.add('visible');
                 }, 1000);
             }, 3000);
         }
 
         function useDefaultName() {
-            let defaultName = "Djaquavian"; // Default name value
-            document.getElementById('renameInput').value = defaultName; // Set the default name in the input
-            finalizeName(); // Call finalizeName to proceed
+            document.getElementById('renameInput').value = "Djaquavian";
+            finalizeName();
         }
 
         function finalizeName() {
@@ -200,15 +173,15 @@
                 alert("Please enter a valid name!");
                 return;
             }
-            // Hide the rename container with fade-out effect
-            document.getElementById('renameContainer').classList.add('fade-out');
-            
-            // After fade out, display the new greeting
+            let renameContainer = document.getElementById('renameContainer');
+            renameContainer.classList.add('fade-out');
             setTimeout(() => {
+                renameContainer.style.display = 'none';
                 let finalGreeting = document.getElementById('greeting');
                 finalGreeting.innerHTML = `Hello, I'm ${secondName},<br>and I will be your bedside AI helper.`;
+                finalGreeting.classList.remove('hidden');
                 finalGreeting.classList.add('visible');
-            }, 1000);  // Adjust the timeout to match the fade-out duration
+            }, 1000);
         }
     </script>
 </body>
