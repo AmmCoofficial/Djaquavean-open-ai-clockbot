@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enhanced Clock Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: black;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      position: relative;
+    }
+
+    #dashboard {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+      width: 80%;
+      max-width: 500px;
+    }
+
+    .flip-clock {
+      display: flex;
+      font-size: 48px;
+      font-weight: bold;
+      color: cyan;
+      text-shadow: 0 0 15px cyan;
+      justify-content: center;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+
+    .flip-card {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 80px;
+      margin: 5px;
+      perspective: 200px;
+      transition: transform 0.6s;
+    }
+
+    .flip-card .top,
+    .flip-card .bottom {
+      position: absolute;
+      width: 100%;
+      height: 50%;
+      background: black;
+      color: cyan;
+      border: 1px solid cyan;
+      text-align: center;
+      line-height: 40px;
+      font-size: 48px;
+    }
+
+    .flip-card .top {
+      border-bottom: 1px solid cyan;
+      border-radius: 10px 10px 0 0;
+      transform-origin: bottom;
+    }
+
+    .flip-card .bottom {
+      top: 50%;
+      border-radius: 0 0 10px 10px;
+      transform-origin: top;
+    }
+
+    .flip-card.flipped .top {
+      transform: rotateX(-180deg);
+    }
+
+    .flip-card.flipped .bottom {
+      transform: rotateX(0deg);
+    }
+
+    .timezone-icon {
+      font-size: 24px;
+      color: cyan;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .timezone-icon:hover {
+      color: #fff;
+    }
+
+    .timezone-dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.8);
+      border-radius: 5px;
+      border: 1px solid cyan;
+      padding: 10px;
+      z-index: 10;
+    }
+
+    .timezone-dropdown select {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 5px;
+      padding: 5px;
+      font-size: 16px;
+      width: 150px;
+      cursor: pointer;
+    }
+
+    .timezone-dropdown select:focus {
+      outline: none;
+      border-color: cyan;
+    }
+
+    .date-display {
+      font-size: 24px;
+      margin-top: 10px;
+    }
+
+    .location-display {
+      font-size: 20px;
+      margin-top: 10px;
+      font-style: italic;
+    }
+
+    .weather-display {
+      font-size: 18px;
+      margin-top: 10px;
+      color: cyan;
+    }
+
+    body.dark-mode {
+      background-color: #121212;
+      color: white;
+    }
+
+    body.light-mode {
+      background-color: #ffffff;
+      color: black;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="dashboard">
+    <div class="flip-clock" id="clock" onclick="toggleFormat()">
+      <div class="flip-card">
+        <div class="top" id="hourT">00</div>
+        <div class="bottom" id="hourB">00</div>
+      </div> : 
+      <div class="flip-card">
+        <div class="top" id="minuteT">00</div>
+        <div class="bottom" id="minuteB">00</div>
+      </div> : 
+      <div class="flip-card">
+        <div class="top" id="secondT">00</div>
+        <div class="bottom" id="secondB">00</div>
+      </div>
+    </div>
+    <div class="date-display" id="date-display">March 7, 2025</div>
+    <div class="location-display" id="location-display">Loading your location...</div>
+    <div class="weather-display" id="weather-display">Loading weather...</div>
+    <span class="timezone-icon" onclick="toggleTimezoneDropdown()">🌍</span>
+    <div class="timezone-dropdown" id="timezoneDropdown">
+      <select id="timezone" onchange="updateTime()">
+        <option value="local">Local Time</option>
+        <option value="UTC">UTC</option>
+        <option value="America/New_York">New York (EST)</option>
+        <option value="Europe/London">London (GMT)</option>
+        <option value="Asia/Tokyo">Tokyo (JST)</option>
+      </select>
+    </div>
+  </div>
+
+  <script>
+    let is24Hour = true;
+
+    // Fetch weather data
+    function getWeather() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          const apiKey = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
+          const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+
+          fetch(weatherUrl)
+            .then(response => response.json())
+            .then(data => {
+              const weather = data.weather[0].description;
+              const temp = data.main.temp;
+              const location = data.name;
+              document.getElementById('location-display').innerText = location;
+              document.getElementById('weather-display').innerText = `${weather}, ${temp}°C`;
+            })
+            .catch(error => {
+              console.error("Error fetching weather data: ", error);
+              document.getElementById('weather-display').innerText = "Unable to fetch weather.";
+            });
+        });
+      } else {
+        document.getElementById('weather-display').innerText = "Geolocation is not supported by this browser.";
+      }
+    }
+
+    function updateTime() {
+      const now = new Date();
+      const timezone = document.getElementById("timezone").value;
+      const options = {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: !is24Hour,
+        timeZone: timezone === "local" ? undefined : timezone
+      };
+
+      const formattedTime = new Intl.DateTimeFormat('en-US', options).formatToParts(now);
+      const hour = formattedTime.find(p => p.type === 'hour').value;
+      const minute = formattedTime.find(p => p.type === 'minute').value;
+      const second = formattedTime.find(p => p.type === 'second').value;
+
+      const date = new Intl.DateTimeFormat('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(now);
+
+      flipClock("hour", hour);
+      flipClock("minute", minute);
+      flipClock("second", second);
+      document.getElementById("date-display").innerText = date;
+    }
+
+    function flipClock(unit, value) {
+      const top = document.getElementById(unit + "T");
+      const bottom = document.getElementById(unit + "B");
+      if (top.innerText !== value) {
+        top.innerText = value;
+        bottom.innerText = value;
+        top.parentElement.classList.add("flipped");
+        setTimeout(() => {
+          top.parentElement.classList.remove("flipped");
+        }, 600);
+      }
+    }
+
+    function toggleFormat() {
+      is24Hour = !is24Hour;
+      updateTime();
+    }
+
+    function toggleTimezoneDropdown() {
+      const dropdown = document.getElementById("timezoneDropdown");
+      if (dropdown.style.display === "block") {
+        dropdown.style.display = "none";
+      } else {
+        dropdown.style.display = "block";
+      }
+    }
+
+    window.onclick = function (event) {
+      const dropdown = document.getElementById("timezoneDropdown");
+      const icon = document.querySelector(".timezone-icon");
+      if (!event.target.matches('.timezone-icon') && !event.target.matches('.timezone-dropdown') && !dropdown.contains(event.target)) {
+        dropdown.style.display = "none";
+      }
+    };
+
+    setInterval(updateTime, 1000);
+    updateTime();
+    getWeather();
+  </script>
+</body>
+
+</html>
